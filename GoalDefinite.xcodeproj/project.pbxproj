@@ -49,7 +49,6 @@
 		6EA8FA242892F3EA0028D1EC /* ValueMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EA8FA232892F3EA0028D1EC /* ValueMetric.swift */; };
 		6EA8FA28289302640028D1EC /* AddMoveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EA8FA27289302640028D1EC /* AddMoveView.swift */; };
 		6EA8FA2A289307040028D1EC /* AddMove.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EA8FA29289307040028D1EC /* AddMove.swift */; };
-		6EA8FA2D28930BE50028D1EC /* GoalsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EA8FA2C28930BE50028D1EC /* GoalsViewModel.swift */; };
 		6EA8FA2F289470110028D1EC /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EA8FA2E289470110028D1EC /* Address.swift */; };
 /* End PBXBuildFile section */
 
@@ -95,7 +94,6 @@
 		6EA8FA232892F3EA0028D1EC /* ValueMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueMetric.swift; sourceTree = "<group>"; };
 		6EA8FA27289302640028D1EC /* AddMoveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMoveView.swift; sourceTree = "<group>"; };
 		6EA8FA29289307040028D1EC /* AddMove.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMove.swift; sourceTree = "<group>"; };
-		6EA8FA2C28930BE50028D1EC /* GoalsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalsViewModel.swift; sourceTree = "<group>"; };
 		6EA8FA2E289470110028D1EC /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -284,7 +282,6 @@
 		6EA8FA2B28930BD30028D1EC /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				6EA8FA2C28930BE50028D1EC /* GoalsViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -394,7 +391,6 @@
 				6E65A5A7287115FF0060CCB1 /* Goal.swift in Sources */,
 				6E65A5D9287293590060CCB1 /* SignUpView.swift in Sources */,
 				6E65A5CB287280390060CCB1 /* BlobView.swift in Sources */,
-				6EA8FA2D28930BE50028D1EC /* GoalsViewModel.swift in Sources */,
 				6EA8FA2A289307040028D1EC /* AddMove.swift in Sources */,
 				6E65A599286FCAB60060CCB1 /* GoalDefiniteApp.swift in Sources */,
 				6E65A5B9287121B20060CCB1 /* Animations.swift in Sources */,

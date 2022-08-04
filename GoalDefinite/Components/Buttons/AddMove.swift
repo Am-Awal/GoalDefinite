@@ -25,7 +25,7 @@ struct AddMove: View {
                 Button {
                     showSearch = true
                 } label: {
-                    Image(systemName: "plus.app")
+                    Image(systemName: "plus")
                         .font(.body.weight(.bold))
                         .frame(width: 36, height: 36 )
                         .foregroundColor(.secondary)

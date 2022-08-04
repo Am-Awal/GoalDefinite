@@ -9,18 +9,17 @@ import SwiftUI
 import Firebase
 
 struct AddMoveView: View {
-    enum Field: Hashable {
-        case title
-        case details
-        case startLine
-        case deadLine
-        case progress
-    }
+//    enum Field: Hashable {
+//        case title
+//        case details
+//        case startLine
+//        case deadLine
+//        case progress
+//    }
     
     @State var description = ""
-    @State var rank = 1
-    @State var executionStart = ""
-    @State var executionEnd = ""
+    @State var executionStart = Date()
+    @State var executionEnd = Date()
     @AppStorage("userID") var userID = ""
     @AppStorage("goalID") var goalID = ""
     @EnvironmentObject var model: Model
@@ -28,12 +27,14 @@ struct AddMoveView: View {
     
     func addMoveData() {
         let db = Firestore.firestore()
-        let move = GoalMove(description: description, rank: rank, executionStart: executionStart, executionEnd: executionEnd)
+        let move = GoalMove(id: UUID(), description: description, executionStart: executionStart, executionEnd: executionEnd)
         let moveID = move.id
+        let executionStartData = Timestamp(date: executionStart)
+        let dexecutionEndData = Timestamp(date: executionEnd)
         
         let docRef = db.collection("UserGoals").document(String(userID)).collection("Goals").document(String(goalID)).collection("GoalMoves").document("\(moveID)")
         
-        docRef.setData(["description": move.description, "background": "", "rank": move.rank, "executionStart": move.executionStart, "executionEnd": move.executionEnd]){ err in
+        docRef.setData(["description": move.description, "background": "", "executionStart": executionStartData, "executionEnd": dexecutionEndData]){ err in
             if let err = err {
                 print("Error writing document: \(err)")
             } else {
@@ -53,33 +54,30 @@ struct AddMoveView: View {
             Group {
                 
                 Section {
-                    Text("Details/comments about the move")
-                        .padding()
-                    TextField("", text: $description)
+//                    Text("")
+//                        .padding()
+                    TextField("Details/comments about the move", text: $description)
                         .inputStyle(icon: "text.justify.left")
                         .disableAutocorrection(true)
                     Rectangle().frame(height: 1)
                         .padding(.horizontal, 20).foregroundColor(.black)
                 }
-                
                 Section {
-                    Text("Finish Line")
-                        .padding()
-                    TextField("", text: $executionEnd)
-                        .inputStyle(icon: "clock.badge.checkmark")
-                        .textContentType(.dateTime)
-                        .disableAutocorrection(true)
+                    DatePicker(
+                        "End",
+                        selection: $executionEnd,
+                        displayedComponents: [.date, .hourAndMinute]
+                    ).inputStyle(icon: "checkerboard.rectangle")
                     Rectangle().frame(height: 1)
                         .padding(.horizontal, 20).foregroundColor(.black)
                 }
                 
                 Section {
-                    Text("Beginning")
-                        .padding()
-                    TextField("", text: $executionStart)
-                        .inputStyle(icon: "clock")
-                        .textContentType(.dateTime)
-                        .disableAutocorrection(true)
+                    DatePicker(
+                        "Start",
+                        selection: $executionStart,
+                        displayedComponents: [.date, .hourAndMinute]
+                    ).inputStyle(icon: "timer")
                     Rectangle().frame(height: 1)
                         .padding(.horizontal, 20).foregroundColor(.black)
                 }

@@ -13,7 +13,7 @@ struct AddGoal: View {
     @State var showAccount = false
     @AppStorage("showModal") var showModal = false
     @AppStorage("isLogged") var isLogged = false
-    @StateObject var goalsVM = GoalsViewModel()
+//    @StateObject var goalsVM = GoalsViewModel()
     
     var body: some View {
         ZStack {

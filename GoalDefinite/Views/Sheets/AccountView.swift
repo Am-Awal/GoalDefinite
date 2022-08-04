@@ -27,6 +27,7 @@ struct AccountView: View {
 //        userID = user.uid
 //    }
     
+
     func fetchAddress() async {
         do {
             let url = URL(string: "https://random-data-api.com/api/address/random_address")!

@@ -11,6 +11,7 @@ import Firebase
 struct GoalView: View {
     var namespace: Namespace.ID
     var goal: Goal = goals[0]
+    
     @Binding var show: Bool
     @State var appear = [false, false, false]
     @EnvironmentObject var model: Model
@@ -20,28 +21,79 @@ struct GoalView: View {
     @AppStorage("userID") var userID = ""
     @AppStorage("goalID") var goalID = ""
     @State var selectedIndex = 0
-    @State var fetchedMoves = []
-    
-    func getGoalData(goalIn: Goal) {
+    @State var fetchedMoves: [GoalMove] = []
+    @State private var goalTitle: String = ""
+//    @FocusState private var titleFieldIsFocused: Bool = false
+//    @State private var titleFieldIsFocused: Bool = false
+    @State var tmpTitle = ""
+        
+    func deleteGoalData(goalIn: String) {
         let db = Firestore.firestore()
         
-        db.collection("UserGoals").document(String(userID)).collection("Goals").document(goalIn.goalID).collection("GoalMoves").getDocuments() { (querySnapshot, err) in
+        
+        db.collection("UserGoals").document(String(userID)).collection("Goals").document(goalIn).delete() { err in
+            if let err = err {
+              print("Error removing document: \(err)")
+            } else {
+              print("Document successfully removed!")
+            }
+        }
+        
+    }
+    
+    func addGoalData() {
+        if (goalTitle != ""){
+            
+            tmpTitle = goalTitle
+            let db = Firestore.firestore()
+            
+            let startLineData = Timestamp(date: goal.startLine)
+            let deadLineData = Timestamp(date: goal.deadLine)
+            
+            let goal = Goal(id: goal.id, title: goalTitle,details:  goal.details, background: "", startLine: goal.startLine, deadLine: goal.deadLine, progress: 0)
+            let goalID = goal.id
+            
+            let docRef = db.collection("UserGoals").document(String(userID)).collection("Goals").document("\(goalID)")
+            
+            docRef.setData(["title": goal.title, "details": goal.details, "background": "", "beginning": startLineData, "deadLine": deadLineData, "progress": 0]){ err in
+                if let err = err {
+                    print("Error writing document: \(err)")
+                } else {
+                    print("Document successfully written!")
+                }
+            }
+        }
+        else { goalTitle = tmpTitle}
+    }
+    
+    func getMoveData(goalIn: Goal) async {
+        let db = Firestore.firestore()
+        if (goalTitle == "") {
+            await HomeView().getGoalData()
+            
+            goalTitle = tmpTitle
+            return
+        }
+        
+        db.collection("UserGoals").document(String(userID)).collection("Goals").document("\(goalIn.id)").collection("GoalMoves").getDocuments() { (querySnapshot, err) in
             if let err = err {
                 print("Error getting documents: \(err)")
             } else {
                 if let querySnapshot = querySnapshot {
+                    fetchedMoves = []
                     for document in querySnapshot.documents {
+                        
                         let data = document.data()
                         
-                        
-                        let title = data["title"] as? String ?? ""
                         let id = document.documentID
-                        let description = data["details"] as? String ?? ""
-                        let startLine = data["startLine"] as? String ?? ""
-                        let finishLine = data["deadLine"] as? String ?? ""
-                        let goal = Goal(goalID: id, title: title, details: description, background: "", startLine: startLine, deadLine: finishLine, progress: 0.4)
-                        fetchedMoves.append(goal)
-//                        fetchedMoves.append(goal)
+                        let has_move = fetchedMoves.contains(where: { $0.id == UUID(uuidString: id) }) // Returns bool
+                        if !has_move {
+                            let description = data["description"] as? String ?? ""
+                            let startLine = (data["executionStart"] as? Timestamp)?.dateValue() ?? Date()
+                            let finishLine = (data["executionEnd"] as? Timestamp)?.dateValue() ?? Date()
+                            let goalMove = GoalMove(id: UUID(uuidString: id)!, description: description, executionStart: startLine, executionEnd: finishLine)
+                            fetchedMoves.append(goalMove)
+                        }
                     }
                 }
                 
@@ -51,41 +103,85 @@ struct GoalView: View {
     }
     
     var body: some View {
-        ZStack {
-            ScrollView {
-                cover.onAppear {
-                    goalID = goal.goalID
+        
+//        List{
+        List {
+//            ScrollView {
+            ZStack{
+                VStack{
+                cover
+                    .onAppear {
+                        goalID = "\(goal.id)"
+                        goalTitle = goal.title
+                        tmpTitle = goal.title
                 }
                 
                 content
-                    .offset(y: 120)
+                    .offset(y: 30)
                     .padding(.bottom, 200)
                     .opacity(appear[2] ? 1 : 0)
+//                    .listRowSeparator(.hidden)
+//                LazyVGrid(columns: [GridItem(.adaptive(minimum: 200), spacing: 20)], spacing: 20) {
+//                    content
+//                        .offset(y: 120)
+////                        .padding(.bottom, 200)
+//                        .opacity(appear[2] ? 1 : 0)
+//                }
+                
+                
+                
             }
             .coordinateSpace(name: "scroll")
             .onAppear{model.showDetail = true}
             .onDisappear { model.showDetail = false}
-            .background(Color("Background"))
-            .mask(RoundedRectangle(cornerRadius: viewState.width / 3, style: .continuous))
-            .shadow(color: .black.opacity(0.3), radius: 30, x: 0, y: 10)
-            .scaleEffect(viewState.width / -500 + 1)
-            .background(.black.opacity(viewState.width / 500))
-            .background(.ultraThinMaterial)
+//            .background(Color("Background"))
+//            .mask(RoundedRectangle(cornerRadius: viewState.width / 3, style: .continuous))
+//            .shadow(color: .black.opacity(0.3), radius: 30, x: 0, y: 10)
+//            .scaleEffect(viewState.width / -500 + 1)
+//            .background(.black.opacity(viewState.width / 500))
+//            .background(.ultraThinMaterial)
             .gesture(isDraggable ? drag : nil)
             .ignoresSafeArea()
             
-            button
+//            button
+//        }
         }
+        .listRowBackground(Color.clear)
+
+//        .ignoresSafeArea()
+//        .task {
+//            await getMoveData(goalIn: goal)
+//        }
+//        .refreshable {
+//            await getMoveData(goalIn: goal)
+        }
+        .coordinateSpace(name: "scroll")
+        .background(.ultraThinMaterial)
+//        .ignoresSafeArea()
         .overlay(
+            HStack{
             AddMove()
+            deleteButton
+            }
         )
+        .overlay(button)
         .onAppear {
             fadeIn()
         }
         .onChange(of: show) { newValue in
             fadeOut()
         }
-    }
+//        }
+        .task {
+            await getMoveData(goalIn: goal)
+        }
+        .refreshable {
+            await getMoveData(goalIn: goal)
+        }
+        .gesture(isDraggable ? drag : nil)
+        
+        
+    } // end body view
 
     var cover: some View {
         GeometryReader { proxy in
@@ -97,28 +193,28 @@ struct GoalView: View {
             .frame(maxWidth: .infinity)
             .frame(height: scrollY > 0 ? 500 + scrollY : 500)
             .foregroundStyle(.black)
-            .background(
+//            .background(
 //                Image(goal.image)
-                Image("")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .padding(20)
-                    .frame(maxWidth: 500)
-                    .matchedGeometryEffect(id: "image\(goal.id)", in: namespace)
-                    .offset(y: scrollY > 0 ? scrollY * -0.8 : 0)
-            )
-            .background(
-                Image(goal.background)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .matchedGeometryEffect(id: "background\(goal.id)", in: namespace)
-                    .offset(y: scrollY > 0 ? -scrollY : 0)
-                    .scaleEffect(scrollY > 0 ? scrollY / 1000 + 1: 1)
-                    .blur(radius: scrollY / 10)
-            )
+//                Image("")
+//                    .resizable()
+//                    .aspectRatio(contentMode: .fit)
+//                    .padding(20)
+//                    .frame(maxWidth: 500)
+//                    .matchedGeometryEffect(id: "image\(goal.id)", in: namespace)
+//                    .offset(y: scrollY > 0 ? scrollY * -0.8 : 0)
+//            )
+//            .background(
+//                Image(goal.background)
+//                    .resizable()
+//                    .aspectRatio(contentMode: .fill)
+////                    .matchedGeometryEffect(id: "background\(goal.id)", in: namespace)
+//                    .offset(y: scrollY > 0 ? -scrollY : 0)
+//                    .scaleEffect(scrollY > 0 ? scrollY / 1000 + 1: 1)
+//                    .blur(radius: scrollY / 10)
+//            )
             .mask(
                 RoundedRectangle(cornerRadius: appear[0] ? 0 : 30, style: .continuous)
-                    .matchedGeometryEffect(id: "mask\(goal.id)", in: namespace)
+//                    .matchedGeometryEffect(id: "mask\(goal.id)", in: namespace)
                     .offset(y: scrollY > 0 ? -scrollY : 0)
             )
             .overlay(
@@ -129,11 +225,12 @@ struct GoalView: View {
         .frame(height: 500)
     }
     
+
     var content: some View {
         VStack(alignment: .leading) {
-            ForEach(Array(goalMoves.enumerated()), id: \.offset) { index, move in
+            ForEach(Array(fetchedMoves.enumerated()), id: \.offset) { index, move in
                 if index != 0 { Divider() }
-                MoveRow(move: move)
+                MoveRow(move: move, namespace: namespace)
                     .onTapGesture {
                         selectedIndex = index
                         showMove = true
@@ -141,12 +238,37 @@ struct GoalView: View {
             }
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 30, style: .continuous))
             .strokeStyle(conrnerRadius: 30)
-            .padding(20)
+//            .padding(20)
             .sheet(isPresented: $showMove) {
-                MoveView(move: goalMoves[selectedIndex])
+                MoveView(move: fetchedMoves[selectedIndex])
             }
         }
-        .padding(20)
+//        .padding(20)
+    }
+    
+    var deleteButton: some View {
+        ZStack {
+            Color.clear
+                .background(.ultraThinMaterial)
+                .blur(radius: 10)
+                .opacity(0)
+            Button {
+                deleteGoalData(goalIn: goalID)
+                withAnimation(.closeCard){
+                    show.toggle()
+                    model.showDetail.toggle()
+                }
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.body.weight(.bold))
+                    .frame(width: 36, height: 36 )
+                    .foregroundColor(Color.red)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .strokeStyle(conrnerRadius: 14)
+            }
+            .frame(height: 70)
+            .frame(maxHeight: .infinity, alignment: .bottom)
+        }
     }
     
     var button: some View {
@@ -169,13 +291,17 @@ struct GoalView: View {
     
     var overlayContent: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(goal.title)
+            TextField(goalTitle, text: $goalTitle)
                 .font(.largeTitle.weight(.bold))
-                .matchedGeometryEffect(id: "title\(goal.id)", in: namespace)
+//                .matchedGeometryEffect(id: "title\(goal.id)", in: namespace)
                 .frame(maxWidth: .infinity, alignment: .leading)
+//                .focused($titleFieldIsFocused)
+                   .onSubmit {
+                       addGoalData()
+                   }
             Text(goal.details)
                 .font(.footnote)
-                .matchedGeometryEffect(id: "text\(goal.id)", in: namespace)
+//                .matchedGeometryEffect(id: "text\(goal.id)", in: namespace)
             Divider()
                 .opacity(appear[0] ? 1 : 0)
             HStack {
@@ -196,10 +322,10 @@ struct GoalView: View {
             Rectangle()
                 .fill(.ultraThinMaterial)
                 .mask(RoundedRectangle(cornerRadius: 30, style: .continuous))
-                .matchedGeometryEffect(id: "blur\(goal.id)", in: namespace)
+//                .matchedGeometryEffect(id: "blur\(goal.id)", in: namespace)
         )
-        .offset(y: 250)
-        .padding(20)
+        .offset(y: 100)
+//        .padding(20)
 
     }
     

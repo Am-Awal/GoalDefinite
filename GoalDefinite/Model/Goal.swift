@@ -8,34 +8,33 @@
 import SwiftUI
 
 struct Goal: Identifiable {
-    let id = UUID()
     
-    var goalID: String
-    var title: String
+    let id: UUID
+        var title: String
     var details: String
     var background: String
-    var startLine: String
-    var deadLine: String
+    var startLine: Date
+    var deadLine: Date
     var progress: CGFloat
 }
 
 
 var featuredGoals = [
-    Goal(goalID: "", title: "Dope and Body", details: "Workout 3x a week", background: "Black", startLine: "Now", deadLine: "Now", progress: 0.0),
+    Goal(id: UUID(), title: "Dope and Body", details: "Workout 3x a week", background: "Black", startLine: Date(), deadLine: Date(), progress: 0.0),
     
-    Goal(goalID: "", title: "Make cigars important", details: "Smoke once per week at most", background: "Black", startLine: "Now", deadLine: "Now", progress: 0.0),
+    Goal(id: UUID(), title: "Make cigars important", details: "Smoke once per week at most", background: "Black", startLine: Date(), deadLine: Date(), progress: 0.0),
     
-    Goal(goalID: "", title: "Early Birld", details: "Be in bed by 11 each night so that you can awake up at 4:30 AM each day", background: "Black", startLine: "Now", deadLine: "Now", progress: 0.0),
+    Goal(id: UUID(), title: "Early Birld", details: "Be in bed by 11 each night so that you can awake up at 4:30 AM each day", background: "Black", startLine: Date(), deadLine: Date(), progress: 0.0),
     
-    Goal(goalID: "", title: "Strong ties", details: "Practice zumunci", background: "Black", startLine: "Call one important person a day.", deadLine: "Now", progress: 0.0),
+    Goal(id: UUID(), title: "Strong ties", details: "Call one important person a day.", background: "Black", startLine: Date(), deadLine: Date(), progress: 0.0),
 ]
 
 var goals = [
-    Goal(goalID: "", title: "Dope and Body", details: "Workout 3x a week", background: "Black", startLine: "Now", deadLine: "Now", progress: 0.0),
+    Goal(id: UUID(), title: "Dope and Body", details: "Workout 3x a week", background: "Black", startLine: Date(), deadLine: Date(), progress: 0.0),
     
-    Goal(goalID: "", title: "Make cigars important", details: "Smoke once per week at most", background: "Black", startLine: "Now", deadLine: "Now", progress: 0.0),
+    Goal(id: UUID(), title: "Make cigars important", details: "Smoke once per week at most", background: "Black", startLine: Date(), deadLine: Date(), progress: 0.0),
     
-    Goal(goalID: "", title: "Early Birld", details: "Be in bed by 11 each night so that you can awake up at 4:30 AM each day", background: "Black", startLine: "Now", deadLine: "Now", progress: 0.0),
+    Goal(id: UUID(), title: "Early Birld", details: "Be in bed by 11 each night so that you can awake up at 4:30 AM each day", background: "Black", startLine: Date(), deadLine: Date(), progress: 0.0),
     
-    Goal(goalID: "", title: "Strong ties", details: "Practice zumunci", background: "Black", startLine: "Call one important person a day.", deadLine: "Now", progress: 0.0),
+    Goal(id: UUID(), title: "Strong ties", details: "Call one important person a day.", background: "Black", startLine: Date(), deadLine: Date(), progress: 0.0),
 ]
