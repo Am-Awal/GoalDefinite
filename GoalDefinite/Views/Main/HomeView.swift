@@ -132,7 +132,7 @@ struct HomeView: View {
 
                 })
                 .overlay(
-                    NavBar(title: "Goal Definite", hasScrolled: $hasScrolled)
+                    NavBar(title: "GoalD", hasScrolled: $hasScrolled)
                 )
                 .overlay(
                     AddGoal()
